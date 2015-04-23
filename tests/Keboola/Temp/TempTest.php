@@ -7,7 +7,7 @@
 
 namespace Keboola\Temp\Tests;
 
-use Keboola\Temp\Temp;
+use \Keboola\Temp\Temp;
 
 class TempTest extends \PHPUnit_Framework_TestCase
 {
@@ -19,5 +19,13 @@ class TempTest extends \PHPUnit_Framework_TestCase
 		$file = $temp->createTmpFile('filename_suffix');
 		$this->assertFileExists($file->getPathName());
 	}
+
+    public function testSetTmpFolder()
+    {
+        $temp = new Temp('test');
+        $temp->setId("aabb");
+        $expectedTmpDir = sys_get_temp_dir() . "/test/aabb";
+        $this->assertEquals($expectedTmpDir, $temp->getTmpFolder());
+    }
 
 }

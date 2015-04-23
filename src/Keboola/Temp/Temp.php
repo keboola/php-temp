@@ -39,18 +39,26 @@ class Temp
 	 */
 	protected $preserveRunFolder = false;
 
+    /**
+     *
+     * If temp folder needs to be deterministic, you can use ID as the last part of folder name
+     *
+     * @var string
+     */
+    protected $id = "";
+
     public function __construct($prefix = '')
     {
         $this->prefix = $prefix;
         $this->filesystem = new Filesystem();
-	    $this->tmpRunFolder = $this->getTmpPath();
+        $this->id = uniqid("run-", true);
     }
 
 	public function initRunFolder()
 	{
 		clearstatcache();
-		if (!file_exists($this->tmpRunFolder) && !is_dir($this->tmpRunFolder)) {
-			$this->filesystem->mkdir($this->tmpRunFolder);
+		if (!file_exists($this->getTmpFolder()) && !is_dir($this->getTmpFolder())) {
+			$this->filesystem->mkdir($this->getTmpFolder());
 		}
 	}
 
@@ -73,7 +81,7 @@ class Temp
 	    if (!empty($this->prefix)) {
 		    $tmpDir .= "/" . $this->prefix;
 	    }
-	    $tmpDir .= "/" . uniqid("run-", true);
+	    $tmpDir .= "/" . $this->id;
         return $tmpDir;
     }
 
@@ -84,7 +92,7 @@ class Temp
 	 */
 	public function getTmpFolder()
 	{
-		return $this->tmpRunFolder;
+		return $this->getTmpPath();;
 	}
 
 	/**
@@ -142,6 +150,16 @@ class Temp
 	}
 
     /**
+     *
+     * Set temp id
+     *
+     * @param $id
+     */
+    public function setId($id) {
+        $this->id = $id;
+    }
+
+    /**
      * Destructor
      *
      * Delete all files created by syrup component run
@@ -164,6 +182,5 @@ class Temp
 	    if (!$preserveRunFolder) {
 		    $fs->remove($this->tmpRunFolder);
 	    }
-
     }
 }
