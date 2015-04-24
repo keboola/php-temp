@@ -11,14 +11,28 @@ use \Keboola\Temp\Temp;
 
 class TempTest extends \PHPUnit_Framework_TestCase
 {
-
 	public function testCreateTmpFile()
 	{
 		$temp = new Temp('test');
+
+        $tempFolder = $temp->getTmpFolder();
+
 		/** @var \SplFileInfo $file */
 		$file = $temp->createTmpFile('filename_suffix');
-		$this->assertFileExists($file->getPathName());
+
+		$this->assertFileExists($file->getPathname());
+        $this->assertContains($tempFolder, $file->getPathname());
 	}
+
+    public function testGetTmpFolder()
+    {
+        $temp = new Temp('test');
+
+        $tempFolder = $temp->getTmpFolder();
+
+        $this->assertNotEmpty($tempFolder);
+        $this->assertContains(sys_get_temp_dir() . '/test', $temp->getTmpFolder());
+    }
 
     public function testSetTmpFolder()
     {

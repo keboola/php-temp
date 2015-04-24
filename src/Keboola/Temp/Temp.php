@@ -8,8 +8,6 @@
 
 namespace Keboola\Temp;
 
-
-use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 
 class Temp
@@ -28,11 +26,6 @@ class Temp
      * @var \SplFileInfo[]
      */
     protected $files = array();
-
-	/**
-	 * @var String
-	 */
-	protected $tmpRunFolder;
 
 	/**
 	 * @var Bool
@@ -57,8 +50,8 @@ class Temp
 	public function initRunFolder()
 	{
 		clearstatcache();
-		if (!file_exists($this->getTmpFolder()) && !is_dir($this->getTmpFolder())) {
-			$this->filesystem->mkdir($this->getTmpFolder());
+		if (!file_exists($this->getTmpPath()) && !is_dir($this->getTmpPath())) {
+			$this->filesystem->mkdir($this->getTmpPath());
 		}
 	}
 
@@ -92,7 +85,7 @@ class Temp
 	 */
 	public function getTmpFolder()
 	{
-		return $this->getTmpPath();;
+		return $this->getTmpPath();
 	}
 
 	/**
@@ -113,7 +106,7 @@ class Temp
             $file .= '-' . $suffix;
         }
 
-        $fileInfo = new \SplFileInfo($this->tmpRunFolder . '/' . $file);
+        $fileInfo = new \SplFileInfo($this->getTmpPath() . '/' . $file);
 
         $this->filesystem->touch($fileInfo);
         $this->files[] = array(
@@ -137,7 +130,7 @@ class Temp
 	{
 		$this->initRunFolder();
 
-		$fileInfo = new \SplFileInfo($this->tmpRunFolder . '/' . $fileName);
+		$fileInfo = new \SplFileInfo($this->getTmpPath() . '/' . $fileName);
 
 		$this->filesystem->touch($fileInfo);
 		$this->files[] = array(
@@ -180,7 +173,7 @@ class Temp
         }
 
 	    if (!$preserveRunFolder) {
-		    $fs->remove($this->tmpRunFolder);
+		    $fs->remove($this->getTmpPath());
 	    }
     }
 }
