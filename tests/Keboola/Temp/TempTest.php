@@ -31,7 +31,7 @@ class TempTest extends \PHPUnit_Framework_TestCase
         $file = $temp->createFile('test');
 
         self::assertInstanceOf('SplFileInfo', $file);
-        self::assertEquals($temp->getTmpFolder() . '/test', $file->getPathname());
+        self::assertEquals($temp->getTmpFolder() . '/' . $file->getFilename(), $file->getPathname());
     }
 
     public function testGetTmpFolder()
@@ -50,6 +50,8 @@ class TempTest extends \PHPUnit_Framework_TestCase
         $temp->setId("aabb");
         $expectedTmpDir = sys_get_temp_dir() . "/test/aabb";
         $this->assertEquals($expectedTmpDir, $temp->getTmpFolder());
-    }
 
+        $file = $temp->createFile('file');
+        self::assertFileExists(sys_get_temp_dir() . "/test/aabb/file");
+    }
 }

@@ -8,15 +8,8 @@
 
 namespace Keboola\Temp;
 
-use Symfony\Component\Filesystem\Filesystem;
-
 class Temp
 {
-    /**
-     * @var Filesystem
-     */
-    protected $filesystem;
-
     /**
      * @var String
      */
@@ -43,7 +36,6 @@ class Temp
     public function __construct($prefix = '')
     {
         $this->prefix = $prefix;
-        $this->filesystem = new Filesystem();
         $this->id = uniqid("run-", true);
     }
 
@@ -51,7 +43,7 @@ class Temp
     {
         clearstatcache();
         if (!file_exists($this->getTmpPath()) && !is_dir($this->getTmpPath())) {
-            $this->filesystem->mkdir($this->getTmpPath());
+            mkdir($this->getTmpPath());
         }
     }
 
@@ -98,24 +90,13 @@ class Temp
      */
     public function createTmpFile($suffix = null, $preserve = false)
     {
-        $this->initRunFolder();
-
         $file = uniqid();
 
         if ($suffix) {
             $file .= '-' . $suffix;
         }
 
-        $fileInfo = new \SplFileInfo($this->getTmpPath() . '/' . $file);
-
-        $this->filesystem->touch($fileInfo);
-        $this->files[] = array(
-            'file'  => $fileInfo,
-            'preserve'  => $preserve
-        );
-        $this->filesystem->chmod($fileInfo, 0600);
-
-        return $fileInfo;
+        return $this->createFile($file, $preserve);
     }
 
     /**
@@ -132,18 +113,17 @@ class Temp
 
         $fileInfo = new \SplFileInfo($this->getTmpPath() . '/' . $fileName);
 
-        $this->filesystem->touch($fileInfo);
+        touch($fileInfo->getPathname());
         $this->files[] = array(
             'file'  => $fileInfo,
             'preserve'  => $preserve
         );
-        $this->filesystem->chmod($fileInfo, 0600);
+        chmod($fileInfo->getPathname(), 0600);
 
         return $fileInfo;
     }
 
     /**
-     *
      * Set temp id
      *
      * @param $id
@@ -153,27 +133,23 @@ class Temp
     }
 
     /**
-     * Destructor
-     *
      * Delete all files created by syrup component run
      */
     function __destruct()
     {
         $preserveRunFolder = $this->preserveRunFolder;
 
-        $fs = new Filesystem();
-
         foreach ($this->files as $file) {
             if ($file['preserve']) {
                 $preserveRunFolder = true;
             }
             if (file_exists($file['file']) && is_file($file['file']) && !$file['preserve']) {
-                $fs->remove($file['file']);
+                unlink($file['file']->getPathname());
             }
         }
 
-        if (!$preserveRunFolder) {
-            $fs->remove($this->getTmpPath());
+        if (!$preserveRunFolder && is_dir($this->getTmpPath())) {
+            rmdir($this->getTmpPath());
         }
     }
 }
