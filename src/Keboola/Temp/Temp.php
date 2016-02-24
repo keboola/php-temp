@@ -43,7 +43,7 @@ class Temp
     {
         clearstatcache();
         if (!file_exists($this->getTmpPath()) && !is_dir($this->getTmpPath())) {
-            mkdir($this->getTmpPath());
+            mkdir($this->getTmpPath(), 0777, true);
         }
     }
 
