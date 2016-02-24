@@ -24,6 +24,16 @@ class TempTest extends \PHPUnit_Framework_TestCase
         $this->assertContains($tempFolder, $file->getPathname());
     }
 
+    public function testCreateFile()
+    {
+        $temp = new Temp();
+
+        $file = $temp->createFile('test');
+
+        self::assertInstanceOf('SplFileInfo', $file);
+        self::assertEquals($temp->getTmpFolder() . '/test', $file->getPathname());
+    }
+
     public function testGetTmpFolder()
     {
         $temp = new Temp('test');
