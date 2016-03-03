@@ -113,12 +113,18 @@ class Temp
 
         $fileInfo = new \SplFileInfo($this->getTmpPath() . '/' . $fileName);
 
-        touch($fileInfo->getPathname());
+        $pathName = $fileInfo->getPathname();
+
+        if (!file_exists(dirname($pathName))) {
+            mkdir(dirname($pathName), 0777, true);
+        }
+
+        touch($pathName);
         $this->files[] = array(
             'file'  => $fileInfo,
             'preserve'  => $preserve
         );
-        chmod($fileInfo->getPathname(), 0600);
+        chmod($pathName, 0600);
 
         return $fileInfo;
     }
@@ -149,7 +155,21 @@ class Temp
         }
 
         if (!$preserveRunFolder && is_dir($this->getTmpPath())) {
-            rmdir($this->getTmpPath());
+            $this->rmDirRecursive($this->getTmpPath());
         }
+    }
+
+    protected function rmDirRecursive($path)
+    {
+        $contents = array_diff(scandir($path), ['.', '..']);
+
+        foreach($contents as $item) {
+            $itemPath = $path . DIRECTORY_SEPARATOR . $item;
+            if (is_dir($itemPath)) {
+                $this->rmDirRecursive($itemPath);
+            }
+        }
+
+        return rmdir($path);
     }
 }
