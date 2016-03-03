@@ -78,4 +78,13 @@ class TempTest extends \PHPUnit_Framework_TestCase
         unset($temp);
         self::assertFileNotExists($dir);
     }
+
+    public function testCleanupFilePreserve()
+    {
+        $temp = new Temp();
+        $file = $temp->createFile('file', true);
+
+        unset($temp);
+        self::assertFileExists($file->getPathname());
+    }
 }
