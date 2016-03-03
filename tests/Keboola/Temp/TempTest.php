@@ -86,5 +86,7 @@ class TempTest extends \PHPUnit_Framework_TestCase
 
         unset($temp);
         self::assertFileExists($file->getPathname());
+        unlink($file->getPathname());
+        rmdir(dirname($file->getPathname()));
     }
 }
