@@ -8,6 +8,8 @@
 
 namespace Keboola\Temp;
 
+use Symfony\Component\Filesystem\Filesystem;
+
 class Temp
 {
     /**
@@ -37,13 +39,14 @@ class Temp
     {
         $this->prefix = $prefix;
         $this->id = uniqid("run-", true);
+        $this->filesystem = new Filesystem();
     }
 
     public function initRunFolder()
     {
         clearstatcache();
         if (!file_exists($this->getTmpPath()) && !is_dir($this->getTmpPath())) {
-            mkdir($this->getTmpPath(), 0777, true);
+            $this->filesystem->mkdir($this->getTmpPath(), 0777, true);
         }
     }
 
@@ -116,15 +119,15 @@ class Temp
         $pathName = $fileInfo->getPathname();
 
         if (!file_exists(dirname($pathName))) {
-            mkdir(dirname($pathName), 0777, true);
+            $this->filesystem->mkdir(dirname($pathName), 0777, true);
         }
 
-        touch($pathName);
+        $this->filesystem->touch($pathName);
         $this->files[] = array(
             'file'  => $fileInfo,
             'preserve'  => $preserve
         );
-        chmod($pathName, 0600);
+        $this->filesystem->chmod($pathName, 0600);
 
         return $fileInfo;
     }
@@ -150,26 +153,12 @@ class Temp
                 $preserveRunFolder = true;
             }
             if (file_exists($file['file']) && is_file($file['file']) && !$file['preserve']) {
-                unlink($file['file']->getPathname());
+                $this->filesystem->remove($file['file']->getPathname());
             }
         }
 
         if (!$preserveRunFolder && is_dir($this->getTmpPath())) {
-            $this->rmDirRecursive($this->getTmpPath());
+            $this->filesystem->remove($this->getTmpPath());
         }
-    }
-
-    protected function rmDirRecursive($path)
-    {
-        $contents = array_diff(scandir($path), ['.', '..']);
-
-        foreach($contents as $item) {
-            $itemPath = $path . DIRECTORY_SEPARATOR . $item;
-            if (is_dir($itemPath)) {
-                $this->rmDirRecursive($itemPath);
-            }
-        }
-
-        return rmdir($path);
     }
 }

@@ -7,7 +7,7 @@
 
 namespace Keboola\Temp\Tests;
 
-use \Keboola\Temp\Temp;
+use Keboola\Temp\Temp;
 
 class TempTest extends \PHPUnit_Framework_TestCase
 {
@@ -74,6 +74,20 @@ class TempTest extends \PHPUnit_Framework_TestCase
 
         self::assertFileExists($dir . '/file');
         self::assertFileExists($dir . '/dir/file2');
+
+        unset($temp);
+        self::assertFileNotExists($dir);
+    }
+
+    public function testCleanupForeignFile()
+    {
+        $temp = new Temp();
+        $temp->initRunFolder();
+
+        $dir = $temp->getTmpFolder();
+
+        touch($dir . '/file');
+        self::assertFileExists($dir . '/file');
 
         unset($temp);
         self::assertFileNotExists($dir);
