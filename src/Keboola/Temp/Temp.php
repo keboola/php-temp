@@ -148,17 +148,23 @@ class Temp
     {
         $preserveRunFolder = $this->preserveRunFolder;
 
-        foreach ($this->files as $file) {
-            if ($file['preserve']) {
-                $preserveRunFolder = true;
+        try {
+            foreach ($this->files as $file) {
+                if ($file['preserve']) {
+                    $preserveRunFolder = true;
+                }
+                if (file_exists($file['file']) && is_file($file['file']) && !$file['preserve']) {
+                    $this->filesystem->remove($file['file']->getPathname());
+                }
             }
-            if (file_exists($file['file']) && is_file($file['file']) && !$file['preserve']) {
-                $this->filesystem->remove($file['file']->getPathname());
-            }
-        }
 
-        if (!$preserveRunFolder && is_dir($this->getTmpPath())) {
-            $this->filesystem->remove($this->getTmpPath());
+            if (!$preserveRunFolder && is_dir($this->getTmpPath())) {
+                $this->filesystem->remove($this->getTmpPath());
+            }
+        } catch (\Exception $e) {
+            // Graceful destructor, does not throw any errors.
+            // Fixes issues when deleting files on a server that is just shutting down.
+            // https://github.com/keboola/docker-bundle/issues/215
         }
     }
 }
