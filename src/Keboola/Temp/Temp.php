@@ -130,12 +130,17 @@ class Temp
      */
     function __destruct()
     {
-
-        foreach ($this->files as $file) {
-            if (file_exists($file['file']) && is_file($file['file'])) {
-                $this->filesystem->remove($file['file']->getPathname());
+        try {
+            foreach ($this->files as $file) {
+                if (file_exists($file['file']) && is_file($file['file'])) {
+                    $this->filesystem->remove($file['file']->getPathname());
+                }
             }
+            $this->filesystem->remove($this->getTmpPath());
+        } catch (\Exception $e) {
+            // Graceful destructor, does not throw any errors.
+            // Fixes issues when deleting files on a server that is just shutting down.
+            // https://github.com/keboola/docker-bundle/issues/215
         }
-        $this->filesystem->remove($this->getTmpPath());
     }
 }
