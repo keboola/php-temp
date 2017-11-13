@@ -23,11 +23,6 @@ class Temp
     protected $files = array();
 
     /**
-     * @var Bool
-     */
-    protected $preserveRunFolder = false;
-
-    /**
      *
      * If temp folder needs to be deterministic, you can use ID as the last part of folder name
      *
@@ -48,14 +43,6 @@ class Temp
         if (!file_exists($this->getTmpPath()) && !is_dir($this->getTmpPath())) {
             $this->filesystem->mkdir($this->getTmpPath(), 0777, true);
         }
-    }
-
-    /**
-     * @param bool $value
-     */
-    public function setPreserveRunFolder($value)
-    {
-        $this->preserveRunFolder = $value;
     }
 
     /**
@@ -87,11 +74,10 @@ class Temp
      * Create empty file in TMP directory
      *
      * @param string $suffix filename suffix
-     * @param bool $preserve
      * @throws \Exception
      * @return \SplFileInfo
      */
-    public function createTmpFile($suffix = null, $preserve = false)
+    public function createTmpFile($suffix = null)
     {
         $file = uniqid();
 
@@ -99,18 +85,17 @@ class Temp
             $file .= '-' . $suffix;
         }
 
-        return $this->createFile($file, $preserve);
+        return $this->createFile($file);
     }
 
     /**
      * Creates named temporary file
      *
      * @param $fileName
-     * @param bool $preserve
      * @return \SplFileInfo
      * @throws \Exception
      */
-    public function createFile($fileName, $preserve = false)
+    public function createFile($fileName)
     {
         $this->initRunFolder();
 
@@ -124,8 +109,7 @@ class Temp
 
         $this->filesystem->touch($pathName);
         $this->files[] = array(
-            'file'  => $fileInfo,
-            'preserve'  => $preserve
+            'file'  => $fileInfo
         );
         $this->filesystem->chmod($pathName, 0600);
 
@@ -146,19 +130,12 @@ class Temp
      */
     function __destruct()
     {
-        $preserveRunFolder = $this->preserveRunFolder;
 
         foreach ($this->files as $file) {
-            if ($file['preserve']) {
-                $preserveRunFolder = true;
-            }
-            if (file_exists($file['file']) && is_file($file['file']) && !$file['preserve']) {
+            if (file_exists($file['file']) && is_file($file['file'])) {
                 $this->filesystem->remove($file['file']->getPathname());
             }
         }
-
-        if (!$preserveRunFolder && is_dir($this->getTmpPath())) {
-            $this->filesystem->remove($this->getTmpPath());
-        }
+        $this->filesystem->remove($this->getTmpPath());
     }
 }
