@@ -6,9 +6,9 @@ for generating randomly named folders and files.
 ## Usage
 
 ```php
-    use Keboola\Temp\Temp;
-    $temp = new Temp('prefix');
-    // Creates a file with unique name suffixed by 'suffix'
-    $tempFile = $temp->createTmpFile('suffix');
-    echo 'Files are stored in: ' . $temp->getTmpFolder();
+use Keboola\Temp\Temp;
+$temp = new Temp('prefix');
+// Creates a file with unique name suffixed by 'suffix'
+$tempFile = $temp->createTmpFile('suffix');
+echo 'Files are stored in: ' . $temp->getTmpFolder();
 ```
