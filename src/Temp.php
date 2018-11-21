@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Keboola\Temp;
 
 use Symfony\Component\Filesystem\Filesystem;
@@ -14,37 +16,46 @@ class Temp
     /**
      * @var \SplFileInfo[]
      */
-    protected $files = array();
+    protected $files = [];
 
     /**
-     *
-     * If temp folder needs to be deterministic, you can use ID as the last part of folder name
-     *
+     * @var Filesystem
+     */
+    private $fileSystem;
+
+    /**
      * @var string
      */
-    protected $id = "";
+    private $id;
 
-    public function __construct($prefix = '')
+    /**
+     * @var string
+     */
+    private $tmpFolder;
+
+    public function __construct(string $prefix = '')
     {
         $this->prefix = $prefix;
         $this->id = uniqid("run-", true);
-        $this->filesystem = new Filesystem();
+        $this->fileSystem = new Filesystem();
     }
 
-    public function initRunFolder()
+    private function initRunFolder(): void
     {
         clearstatcache();
-        if (!file_exists($this->getTmpPath()) && !is_dir($this->getTmpPath())) {
-            $this->filesystem->mkdir($this->getTmpPath(), 0777, true);
+        $path = $this->getTmpPath();
+        if (!file_exists($path) && !is_dir($path)) {
+            $this->fileSystem->mkdir($path, 0777);
         }
+        $this->tmpFolder = $path;
     }
 
     /**
-     * Get path to temp directory
+     * Get path to the temporary folder.
      *
      * @return string
      */
-    protected function getTmpPath()
+    private function getTmpPath(): string
     {
         $tmpDir = sys_get_temp_dir();
         if (!empty($this->prefix)) {
@@ -55,81 +66,64 @@ class Temp
     }
 
     /**
-     * Returns path to temp folder for current request
+     * Returns path to the temporary folder.
      *
      * @return string
      */
-    public function getTmpFolder()
+    public function getTmpFolder(): string
     {
-        return $this->getTmpPath();
+        if (!$this->tmpFolder) {
+            $this->initRunFolder();
+        }
+        return $this->tmpFolder;
     }
 
     /**
-     * Create empty file in TMP directory
+     * Create a randomly named temporary file.
      *
      * @param string $suffix filename suffix
      * @throws \Exception
      * @return \SplFileInfo
      */
-    public function createTmpFile($suffix = null)
+    public function createTmpFile(string $suffix = ''): \SplFileInfo
     {
         $file = uniqid();
-
         if ($suffix) {
             $file .= '-' . $suffix;
         }
-
         return $this->createFile($file);
     }
 
     /**
-     * Creates named temporary file
+     * Creates a named temporary file.
      *
-     * @param $fileName
+     * @param string $fileName
      * @return \SplFileInfo
      * @throws \Exception
      */
-    public function createFile($fileName)
+    public function createFile(string $fileName): \SplFileInfo
     {
-        $this->initRunFolder();
-
-        $fileInfo = new \SplFileInfo($this->getTmpPath() . '/' . $fileName);
-
+        $fileInfo = new \SplFileInfo($this->getTmpFolder() . '/' . $fileName);
         $pathName = $fileInfo->getPathname();
-
         if (!file_exists(dirname($pathName))) {
-            $this->filesystem->mkdir(dirname($pathName), 0777, true);
+            $this->fileSystem->mkdir(dirname($pathName), 0777);
         }
-
-        $this->filesystem->touch($pathName);
-        $this->files[] = array(
-            'file'  => $fileInfo
-        );
-        $this->filesystem->chmod($pathName, 0600);
-
+        $this->fileSystem->touch($pathName);
+        $this->files[] = $fileInfo;
+        $this->fileSystem->chmod($pathName, 0600);
         return $fileInfo;
     }
 
     /**
-     * Set temp id
-     *
-     * @param $id
+     * Delete the whole temporary folder including all files.
      */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    /**
-     * Delete all files created by syrup component run
-     */
-    public function remove()
+    public function remove(): void
     {
         foreach ($this->files as $file) {
-            if (file_exists($file['file']) && is_file($file['file'])) {
-                $this->filesystem->remove($file['file']->getPathname());
+            if (file_exists($file->getPathname()) && is_file($file->getPathname())) {
+                $this->fileSystem->remove($file->getPathname());
             }
         }
-        $this->filesystem->remove($this->getTmpPath());
+        $this->fileSystem->remove($this->getTmpFolder());
     }
 }
