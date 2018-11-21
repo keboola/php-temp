@@ -14,6 +14,12 @@ echo 'Files are stored in: ' . $temp->getTmpFolder();
 $temp->remove();
 ```
 
+Available methods:
+
+- `getTmpFolder` -- Get the name of the temporary folder.
+- `createFile` -- Create a named file in the temporary folder.
+- `createTmpFile` -- Create a random file in the temporary folder.
+
 ## Migration from version 2.0
 - The public `setId` method was removed. This function was rarely used and is no longer available.
 - The public `initRunFolder` method was removed. The folder is now initialized when used and there is 
