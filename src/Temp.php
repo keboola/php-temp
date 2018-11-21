@@ -11,12 +11,7 @@ class Temp
     /**
      * @var String
      */
-    protected $prefix;
-
-    /**
-     * @var \SplFileInfo[]
-     */
-    protected $files = [];
+    private $prefix;
 
     /**
      * @var Filesystem
@@ -109,7 +104,6 @@ class Temp
             $this->fileSystem->mkdir(dirname($pathName), 0777);
         }
         $this->fileSystem->touch($pathName);
-        $this->files[] = $fileInfo;
         $this->fileSystem->chmod($pathName, 0600);
         return $fileInfo;
     }
@@ -119,11 +113,6 @@ class Temp
      */
     public function remove(): void
     {
-        foreach ($this->files as $file) {
-            if (file_exists($file->getPathname()) && is_file($file->getPathname())) {
-                $this->fileSystem->remove($file->getPathname());
-            }
-        }
         $this->fileSystem->remove($this->getTmpFolder());
     }
 }
