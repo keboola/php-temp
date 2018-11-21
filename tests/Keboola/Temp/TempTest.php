@@ -32,7 +32,7 @@ class TempTest extends \PHPUnit_Framework_TestCase
     public function testCreateFileNested()
     {
         $temp = new Temp();
-        $file = $temp->createFile('dir/file');
+        $temp->createFile('dir/file');
 
         self::assertFileExists($temp->getTmpFolder() . '/dir/file');
     }
@@ -54,22 +54,22 @@ class TempTest extends \PHPUnit_Framework_TestCase
         $expectedTmpDir = sys_get_temp_dir() . "/test/aabb";
         $this->assertEquals($expectedTmpDir, $temp->getTmpFolder());
 
-        $file = $temp->createFile('file');
+        $temp->createFile('file');
         self::assertFileExists(sys_get_temp_dir() . "/test/aabb/file");
     }
 
     public function testCleanup()
     {
         $temp = new Temp();
-        $file = $temp->createFile('file');
-        $deeperFile = $temp->createFile('dir/file2');
+        $temp->createFile('file');
+        $temp->createFile('dir/file2');
 
         $dir = $temp->getTmpFolder();
 
         self::assertFileExists($dir . '/file');
         self::assertFileExists($dir . '/dir/file2');
 
-        unset($temp);
+        $temp->remove();
         self::assertFileNotExists($dir);
     }
 
@@ -83,7 +83,7 @@ class TempTest extends \PHPUnit_Framework_TestCase
         touch($dir . '/file');
         self::assertFileExists($dir . '/file');
 
-        unset($temp);
+        $temp->remove();
         self::assertFileNotExists($dir);
     }
 }
