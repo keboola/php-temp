@@ -1,17 +1,23 @@
----
 language: php
 php:
-- 5.6
-- 7.0
-- hhvm
-matrix:
-  allow_failures:
-  - php: hhvm
+  - 5.6
+  - 7.0
+  - 7.1
+  - 7.2
+env:
+  - GIT_COMMIT_SHA=$TRAVIS_COMMIT GIT_BRANCH=$TRAVIS_BRANCH
+
 install:
-- composer install --dev --no-scripts
+  - composer install --dev --no-scripts
 script:
-- php vendor/bin/phpunit --coverage-clover build/logs/clover.xml --whitelist=src/
+  - php vendor/bin/phpunit --coverage-clover build/logs/clover.xml --whitelist=src/
 after_success:
-- bash <(curl -s https://codecov.io/bash)
-- ./vendor/bin/test-reporter --stdout > codeclimate.json
-- "curl -X POST -d @codeclimate.json -H 'Content-Type: application/json' -H 'User-Agent: Code Climate (PHP Test Reporter v0.1.1)' https://codeclimate.com/test_reports"
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+  - ./cc-test-reporter after-build --exit-code 0
+
+notifications:
+  slack:
+    secure: osMFQ0eq0Q3/TLUcS7KwIlkbkiSkD0aj2qtzTXPglDxXbDE66n1K1pQ9e626jXIX4VBJjtVsO27DzunSkrzMQa6d2bscgC1YriJaSLLiI1/BRS3f/rImTAEYrwVlSSPouX0HOkaGQCR6Z0zifXXC2q1SxSYrA96L7cdcczTua8g=
+  email: false

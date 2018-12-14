@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mirocillik
- * Date: 05/11/13
- * Time: 14:48
- */
 
 namespace Keboola\Temp;
 
@@ -121,14 +115,15 @@ class Temp
      *
      * @param $id
      */
-    public function setId($id) {
+    public function setId($id)
+    {
         $this->id = $id;
     }
 
     /**
      * Delete all files created by syrup component run
      */
-    function __destruct()
+    public function __destruct()
     {
         try {
             foreach ($this->files as $file) {

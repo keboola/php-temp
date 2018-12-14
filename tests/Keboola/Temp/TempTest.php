@@ -1,9 +1,4 @@
 <?php
-/**
- * User: kachnitel
- * Date: 7/12/13
- * Time: 3:32 PM
- */
 
 namespace Keboola\Temp\Tests;
 
@@ -40,7 +35,6 @@ class TempTest extends \PHPUnit_Framework_TestCase
         $file = $temp->createFile('dir/file');
 
         self::assertFileExists($temp->getTmpFolder() . '/dir/file');
-
     }
 
     public function testGetTmpFolder()
