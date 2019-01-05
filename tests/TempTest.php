@@ -17,6 +17,12 @@ class TempTest extends TestCase
 
         self::assertFileExists($file->getPathname());
         self::assertContains($tempFolder, $file->getPathname());
+        self::assertStringEndsWith('-filename_suffix', $file->getFilename());
+        self::assertNotEquals('-filename_suffix', $file->getFilename());
+        $dirParts = explode('/', $file->getPath());
+        $tempDirName = (string) end($dirParts);
+        self::assertStringStartsWith('run-', $tempDirName);
+        self::assertGreaterThan(20, strlen($tempDirName));
     }
 
     public function testCreateFile(): void
@@ -26,6 +32,7 @@ class TempTest extends TestCase
 
         self::assertInstanceOf('SplFileInfo', $file);
         self::assertEquals($temp->getTmpFolder() . '/' . $file->getFilename(), $file->getPathname());
+        self::assertEquals('0777', substr(sprintf('%o', $file->getPerms()), -4));
     }
 
     public function testCreateFileNested(): void

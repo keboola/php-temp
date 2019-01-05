@@ -12,5 +12,12 @@
 	<testsuite name="Library Test Suite">
 		<directory>tests</directory>
 	</testsuite>
-
+	<filter>
+		<whitelist processUncoveredFilesFromWhitelist="true">
+			<directory suffix=".php">.</directory>
+			<exclude>
+				<directory suffix=".php">vendor</directory>
+			</exclude>
+		</whitelist>
+	</filter>
 </phpunit>

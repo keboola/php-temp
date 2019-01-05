@@ -8,6 +8,8 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class Temp
 {
+    private const FILE_MODE = 0777;
+
     /**
      * @var String
      */
@@ -39,9 +41,7 @@ class Temp
     {
         clearstatcache();
         $path = $this->getTmpPath();
-        if (!file_exists($path) && !is_dir($path)) {
-            $this->fileSystem->mkdir($path, 0777);
-        }
+        $this->fileSystem->mkdir($path, self::FILE_MODE);
         $this->tmpFolder = $path;
     }
 
@@ -101,10 +101,10 @@ class Temp
         $fileInfo = new \SplFileInfo($this->getTmpFolder() . '/' . $fileName);
         $pathName = $fileInfo->getPathname();
         if (!file_exists(dirname($pathName))) {
-            $this->fileSystem->mkdir(dirname($pathName), 0777);
+            $this->fileSystem->mkdir(dirname($pathName), self::FILE_MODE);
         }
         $this->fileSystem->touch($pathName);
-        $this->fileSystem->chmod($pathName, 0600);
+        $this->fileSystem->chmod($pathName, self::FILE_MODE);
         return $fileInfo;
     }
 
