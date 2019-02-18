@@ -1,35 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Keboola\Temp\Tests;
 
 use Keboola\Temp\Temp;
+use PHPUnit\Framework\TestCase;
 
-class TempTest extends \PHPUnit_Framework_TestCase
+class TempTest extends TestCase
 {
-    public function testCreateTmpFile()
+    public function testCreateTmpFile(): void
     {
         $temp = new Temp('test');
-
         $tempFolder = $temp->getTmpFolder();
-
-        /** @var \SplFileInfo $file */
         $file = $temp->createTmpFile('filename_suffix');
 
-        $this->assertFileExists($file->getPathname());
-        $this->assertContains($tempFolder, $file->getPathname());
+        self::assertFileExists($file->getPathname());
+        self::assertContains($tempFolder, $file->getPathname());
     }
 
-    public function testCreateFile()
+    public function testCreateFile(): void
     {
         $temp = new Temp();
-
         $file = $temp->createFile('test');
 
         self::assertInstanceOf('SplFileInfo', $file);
         self::assertEquals($temp->getTmpFolder() . '/' . $file->getFilename(), $file->getPathname());
     }
 
-    public function testCreateFileNested()
+    public function testCreateFileNested(): void
     {
         $temp = new Temp();
         $temp->createFile('dir/file');
@@ -37,33 +36,20 @@ class TempTest extends \PHPUnit_Framework_TestCase
         self::assertFileExists($temp->getTmpFolder() . '/dir/file');
     }
 
-    public function testGetTmpFolder()
+    public function testGetTmpFolder(): void
     {
         $temp = new Temp('test');
-
         $tempFolder = $temp->getTmpFolder();
 
-        $this->assertNotEmpty($tempFolder);
-        $this->assertContains(sys_get_temp_dir() . '/test', $temp->getTmpFolder());
+        self::assertNotEmpty($tempFolder);
+        self::assertContains(sys_get_temp_dir() . '/test', $temp->getTmpFolder());
     }
 
-    public function testSetTmpFolder()
-    {
-        $temp = new Temp('test');
-        $temp->setId("aabb");
-        $expectedTmpDir = sys_get_temp_dir() . "/test/aabb";
-        $this->assertEquals($expectedTmpDir, $temp->getTmpFolder());
-
-        $temp->createFile('file');
-        self::assertFileExists(sys_get_temp_dir() . "/test/aabb/file");
-    }
-
-    public function testCleanup()
+    public function testCleanup(): void
     {
         $temp = new Temp();
         $temp->createFile('file');
         $temp->createFile('dir/file2');
-
         $dir = $temp->getTmpFolder();
 
         self::assertFileExists($dir . '/file');
@@ -73,11 +59,9 @@ class TempTest extends \PHPUnit_Framework_TestCase
         self::assertFileNotExists($dir);
     }
 
-    public function testCleanupForeignFile()
+    public function testCleanupForeignFile(): void
     {
         $temp = new Temp();
-        $temp->initRunFolder();
-
         $dir = $temp->getTmpFolder();
 
         touch($dir . '/file');
