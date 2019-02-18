@@ -20,7 +20,7 @@ Available methods:
 - `createFile` -- Create a named file in the temporary folder.
 - `createTmpFile` -- Create a random file in the temporary folder.
 
-## Migration from version 2.0
+## Migration from version 1.0
 - The temp folder is no longer deleted automatically in the destructor. It needs to 
   be removed explicitly by calling the `remove()` method.
 - The public `setId` method was removed. This function was rarely used and is no longer available.
