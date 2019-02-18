@@ -21,11 +21,9 @@ Available methods:
 - `createTmpFile` -- Create a random file in the temporary folder.
 
 ## Migration from version 2.0
+- The temp folder is no longer deleted automatically in the destructor. It needs to 
+  be removed explicitly by calling the `remove()` method.
 - The public `setId` method was removed. This function was rarely used and is no longer available.
 - The public `initRunFolder` method was removed. The folder is now initialized when used and there is 
 no need to call `initRunFolder` any more.
 - The protected `getTmpPath` method is now private. 
-
-## Migration from version 1.0
-The temp folder is no longer deleted automatically in the destructor. It needs to 
-be removed explicitly by calling the `remove()` method.
