@@ -11,4 +11,9 @@ $temp = new Temp('prefix');
 // Creates a file with unique name suffixed by 'suffix'
 $tempFile = $temp->createTmpFile('suffix');
 echo 'Files are stored in: ' . $temp->getTmpFolder();
+$temp->remove();
 ```
+
+## Migration from version 1.0
+The temp folder is no longer deleted automatically in the destructor. It needs to 
+be removed explicitly by calling the `remove()` method.
