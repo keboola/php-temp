@@ -33,7 +33,7 @@ class Temp
     public function __construct(string $prefix = '')
     {
         $this->prefix = $prefix;
-        $this->id = uniqid("run-", true);
+        $this->id = uniqid('run-', true);
         $this->fileSystem = new Filesystem();
     }
 
@@ -54,9 +54,9 @@ class Temp
     {
         $tmpDir = sys_get_temp_dir();
         if (!empty($this->prefix)) {
-            $tmpDir .= "/" . $this->prefix;
+            $tmpDir .= '/' . $this->prefix;
         }
-        $tmpDir .= "/" . $this->id;
+        $tmpDir .= '/' . $this->id;
         return $tmpDir;
     }
 

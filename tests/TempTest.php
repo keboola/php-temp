@@ -16,7 +16,7 @@ class TempTest extends TestCase
         $file = $temp->createTmpFile('filename_suffix');
 
         self::assertFileExists($file->getPathname());
-        self::assertContains($tempFolder, $file->getPathname());
+        self::assertStringContainsString($tempFolder, $file->getPathname());
         self::assertStringEndsWith('-filename_suffix', $file->getFilename());
         self::assertNotEquals('-filename_suffix', $file->getFilename());
         $dirParts = explode('/', $file->getPath());
@@ -49,7 +49,7 @@ class TempTest extends TestCase
         $tempFolder = $temp->getTmpFolder();
 
         self::assertNotEmpty($tempFolder);
-        self::assertContains(sys_get_temp_dir() . '/test', $temp->getTmpFolder());
+        self::assertStringContainsString(sys_get_temp_dir() . '/test', $temp->getTmpFolder());
     }
 
     public function testCleanup(): void
