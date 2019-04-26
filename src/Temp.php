@@ -8,6 +8,8 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class Temp
 {
+    private const FILE_MODE = 0777;
+
     /**
      * @var String
      */
@@ -31,7 +33,7 @@ class Temp
     public function __construct(string $prefix = '')
     {
         $this->prefix = $prefix;
-        $this->id = uniqid("run-", true);
+        $this->id = uniqid('run-', true);
         $this->fileSystem = new Filesystem();
     }
 
@@ -39,9 +41,7 @@ class Temp
     {
         clearstatcache();
         $path = $this->getTmpPath();
-        if (!file_exists($path) && !is_dir($path)) {
-            $this->fileSystem->mkdir($path, 0777);
-        }
+        $this->fileSystem->mkdir($path, self::FILE_MODE);
         $this->tmpFolder = $path;
     }
 
@@ -54,9 +54,9 @@ class Temp
     {
         $tmpDir = sys_get_temp_dir();
         if (!empty($this->prefix)) {
-            $tmpDir .= "/" . $this->prefix;
+            $tmpDir .= '/' . $this->prefix;
         }
-        $tmpDir .= "/" . $this->id;
+        $tmpDir .= '/' . $this->id;
         return $tmpDir;
     }
 
@@ -101,10 +101,10 @@ class Temp
         $fileInfo = new \SplFileInfo($this->getTmpFolder() . '/' . $fileName);
         $pathName = $fileInfo->getPathname();
         if (!file_exists(dirname($pathName))) {
-            $this->fileSystem->mkdir(dirname($pathName), 0777);
+            $this->fileSystem->mkdir(dirname($pathName), self::FILE_MODE);
         }
         $this->fileSystem->touch($pathName);
-        $this->fileSystem->chmod($pathName, 0600);
+        $this->fileSystem->chmod($pathName, self::FILE_MODE);
         return $fileInfo;
     }
 

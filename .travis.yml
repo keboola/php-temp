@@ -8,7 +8,7 @@ env:
 install:
   - composer install --dev --no-scripts
 script:
-  - php vendor/bin/phpunit --coverage-clover build/logs/clover.xml --whitelist=src/
+  - composer ci
 after_success:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
