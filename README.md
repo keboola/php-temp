@@ -27,3 +27,7 @@ Available methods:
 - The public `initRunFolder` method was removed. The folder is now initialized when used and there is 
 no need to call `initRunFolder` any more.
 - The protected `getTmpPath` method is now private. 
+
+## License
+
+MIT licensed, see [LICENSE](./LICENSE) file.
